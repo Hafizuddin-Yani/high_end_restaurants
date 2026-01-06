@@ -1,0 +1,78 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "high-end-restaurants",
+          "appId": "1:1034189723712:android:8ea7ad1ef9c6edd301e7a5",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "high-end-restaurants",
+          "appId": "1:1034189723712:ios:d40aa38f613acfc401e7a5",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "high-end-restaurants",
+          "appId": "1:1034189723712:ios:d40aa38f613acfc401e7a5",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "high-end-restaurants",
+          "configurations": {
+            "android": "1:1034189723712:android:8ea7ad1ef9c6edd301e7a5",
+            "ios": "1:1034189723712:ios:d40aa38f613acfc401e7a5",
+            "macos": "1:1034189723712:ios:d40aa38f613acfc401e7a5",
+            "web": "1:1034189723712:web:54a72267b2df7edb01e7a5",
+            "windows": "1:1034189723712:web:ef22724a05712dc301e7a5"
+          }
+        }
+      }
+    }
+  }
+}

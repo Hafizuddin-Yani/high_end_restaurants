@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can always read their own data (needed for admin role check)
+      // Admins can read all users
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Users can create their own profile during registration
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Users can update their own profile, admins can update any
+      allow update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // Packages collection (menu items)
+    match /packages/{packageId} {
+      // Anyone can read packages (public menu)
+      allow read: if true;
+      // Only admins can create/update/delete packages
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Bookings collection
+    match /bookings/{bookingId} {
+      // Allow authenticated users to list/query bookings (needed for capacity checking)
+      // Individual document reads are restricted to owner or admin
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+      // Authenticated users can create bookings for themselves
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      // Users can update their own bookings, admins can update any
+      allow update: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+      // Users can delete their own bookings, admins can delete any
+      allow delete: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+    }
+  }
+}
+
